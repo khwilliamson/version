@@ -36,6 +36,13 @@ to better resolve v-string versions. Resolves:
     https://rt.cpan.org/Ticket/Display.html?id=93603
     https://rt.cpan.org/Ticket/Display.html?id=93715
 
+Major Changes in 0.9909 - 2014-08-15
+=====================================
+Compatibility release for Perl 5.20.1.  Apply two patches from bleadperl
+(one which shipped with 5.20.0 and one from bleadperl) so that a clean
+release can be applied prior to 5.20.1 being shipped.  Holding back a few
+other improvements, so expect 0.9910 shortly.
+
 Major Changes in 0.9908 - 2014-02-02
 =====================================
 More optimizations courtesy of Daniel Dragan (bulk88@hotmail.com).
