@@ -561,7 +561,14 @@ sub scan_version {
 		last;
 	    }
 	    elsif ( $pos eq '.' ) {
-		$s = ++$pos;
+		$pos++;
+		if ($qv) {
+		    # skip leading zeros
+		    while ($pos eq '0') {
+			$pos++;
+		    }
+		}
+		$s = $pos;
 	    }
 	    elsif ( $pos eq '_' && isDIGIT($pos+1) ) {
 		$s = ++$pos;
@@ -758,13 +765,10 @@ sub normal {
     }
     my $alpha = $self->{alpha} || "";
     my $qv = $self->{qv} || "";
+
     my $len = $#{$self->{version}};
     my $digit = $self->{version}[0];
     my $string = sprintf("v%d", $digit );
-
-    if ($alpha and warnings::enabled()) {
-	warnings::warn($WARN_CATEGORY, 'alpha->normal() is lossy');
-    }
 
     for ( my $i = 1 ; $i < $len ; $i++ ) {
 	$digit = $self->{version}[$i];
@@ -773,7 +777,12 @@ sub normal {
 
     if ( $len > 0 ) {
 	$digit = $self->{version}[$len];
-	$string .= sprintf(".%0d", $digit);
+	if ( $alpha ) {
+	    $string .= sprintf("_%0d", $digit);
+	}
+	else {
+	    $string .= sprintf(".%0d", $digit);
+	}
     }
 
     if ( $len <= 2 ) {

@@ -381,8 +381,14 @@ Perl_scan_version(pTHX_ const char *s, SV *rv, bool qv)
 		s = last;
 		break;
 	    }
-	    else if ( *pos == '.' )
-		s = ++pos;
+	    else if ( *pos == '.' ) {
+		pos++;
+		if (qv) {
+		    while (*pos == '0')
+			++pos;
+		}
+		s = pos;
+	    }
 	    else if ( *pos == '_' && isDIGIT(pos[1]) )
 		s = ++pos;
 	    else if ( *pos == ',' && isDIGIT(pos[1]) )
@@ -924,11 +930,6 @@ Perl_vnormal(pTHX_ SV *vs)
     if ( hv_exists(MUTABLE_HV(vs), "qv", 2) )
 	qv = TRUE;
 
-    if (alpha) {
-	Perl_ck_warner(aTHX_ packWARN(WARN_NUMERIC),
-		       "alpha->normal() is lossy");
-    }
-
     av = MUTABLE_AV(SvRV(*hv_fetchs(MUTABLE_HV(vs), "version", FALSE)));
 
     len = av_len(av);
@@ -952,7 +953,10 @@ Perl_vnormal(pTHX_ SV *vs)
 	/* handle last digit specially */
 	SV * tsv = *av_fetch(av, len, 0);
 	digit = SvIV(tsv);
-	Perl_sv_catpvf(aTHX_ sv, ".%"IVdf, (IV)digit);
+	if ( alpha )
+	    Perl_sv_catpvf(aTHX_ sv, "_%"IVdf, (IV)digit);
+	else
+	    Perl_sv_catpvf(aTHX_ sv, ".%"IVdf, (IV)digit);
     }
 
     if ( len <= 2 ) { /* short version, must be at least three */
