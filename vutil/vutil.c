@@ -381,8 +381,14 @@ Perl_scan_version(pTHX_ const char *s, SV *rv, bool qv)
 		s = last;
 		break;
 	    }
-	    else if ( *pos == '.' )
-		s = ++pos;
+	    else if ( *pos == '.' ) {
+		pos++;
+		if (qv) {
+		    while (*pos == '0')
+			++pos;
+		}
+		s = pos;
+	    }
 	    else if ( *pos == '_' && isDIGIT(pos[1]) )
 		s = ++pos;
 	    else if ( *pos == ',' && isDIGIT(pos[1]) )
@@ -918,8 +924,6 @@ Perl_vnormal(pTHX_ SV *vs)
 	alpha = TRUE;
     if ( hv_exists(MUTABLE_HV(vs), "qv", 2) )
 	qv = TRUE;
-    if (alpha && ! qv)
-	Perl_croak(aTHX_ "Invalid version method call");
 
     av = MUTABLE_AV(SvRV(*hv_fetchs(MUTABLE_HV(vs), "version", FALSE)));
 

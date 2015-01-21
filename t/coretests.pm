@@ -592,13 +592,6 @@ SKIP: {
 	eval {my $v = $CLASS->new({1 => 2}) };
 	like $@, qr/Invalid version format/, 'Do not crash for garbage';
     }
-    { # https://rt.cpan.org/Ticket/Display.html?id=93340
-	eval{$CLASS->$method(q[2.6_01])->normal()};
-	like $@, qr/Invalid version method call/, 'Cannot call normal on non-qv alpha';
-	eval{$CLASS->$method(q[v2.6_01])->normal()};
-	unlike $@, qr/Invalid version method call/, 'Cannot call normal on non-qv alpha';
-	isnt $@, 'No error';
-    }
     { # https://rt.cpan.org/Ticket/Display.html?id=93603
 	eval {my $v = $CLASS->$method('.1.')};
 	like $@, qr/trailing decimal/, 'Forbid trailing decimals';
@@ -626,6 +619,12 @@ SKIP: {
 	$v = $CLASS->new($two31);
 	is "$v", 'v.Inf', 'Element Exceeds VERSION_MAX';
 	like $warning, qr/Integer overflow in version/, 'Overflow warning';
+    }
+    { # https://rt.cpan.org/Ticket/Display.html?id=101628
+	undef $warning;
+	$v = $CLASS->new('1.1.00000000010');
+	is $v->normal, "v1.1.10", 'Ignore leading zeros';
+	unlike $warning, qr/Integer overflow in version/, 'No overflow warning';
     }
 }
 

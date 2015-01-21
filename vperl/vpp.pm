@@ -122,7 +122,7 @@ use strict;
 
 use Config;
 use vars qw($VERSION $CLASS @ISA $LAX $STRICT);
-$VERSION = 0.9911;
+$VERSION = 0.9912;
 $CLASS = 'version::vpp';
 
 require version::regex;
@@ -564,7 +564,14 @@ sub scan_version {
 		last;
 	    }
 	    elsif ( $pos eq '.' ) {
-		$s = ++$pos;
+		$pos++;
+		if ($qv) {
+		    # skip leading zeros
+		    while ($pos eq '0') {
+			$pos++;
+		    }
+		}
+		$s = $pos;
 	    }
 	    elsif ( $pos eq '_' && isDIGIT($pos+1) ) {
 		$s = ++$pos;
@@ -757,11 +764,7 @@ sub normal {
     }
     my $alpha = $self->{alpha} || "";
     my $qv = $self->{qv} || "";
-    if ($alpha and not $qv) {
-	# can't do this
-	require Carp;
-	Carp::croak("Invalid version method call");
-    }
+
     my $len = $#{$self->{version}};
     my $digit = $self->{version}[0];
     my $string = sprintf("v%d", $digit );
