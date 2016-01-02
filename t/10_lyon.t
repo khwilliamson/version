@@ -1,6 +1,6 @@
 #! perl
 
-use Test::More;
+use Test::More qw/no_plan/;
 
 use version;
 
@@ -10,12 +10,16 @@ use version;
 ok(version->new(1.0203) == version->new('1.0203'));
 ok(version->new(1.02_03) == version->new('1.02_03'));
 ok(version->new(v1.2.3) == version->new('v1.2.3'));
-ok(version->new(v1.2.3_0) == version->new('v1.2.3_0'));
+if ($] >= 5.008_001) {
+    ok(version->new(v1.2.3_0) == version->new('v1.2.3_0'));
+}
 
 cmp_ok(version->new(1.0203), '==', version->new('1.0203'));
 cmp_ok(version->new(1.02_03), '==', version->new('1.02_03'));
 cmp_ok(version->new(v1.2.3), '==', version->new('v1.2.3'));
-cmp_ok(version->new(v1.2.3_0), '==', version->new('v1.2.3_0'));
+if ($] >= 5.008_001) {
+    cmp_ok(version->new(v1.2.3_0), '==', version->new('v1.2.3_0'));
+}
 
 cmp_ok(version->new('1.0203')->numify, '==', '1.0203');
 is(version->new('1.0203')->normal, 'v1.20.300');
@@ -39,5 +43,3 @@ TODO: {
     local $TODO = 'Stringification of dotted decimal alpha versions is ambiguous';
     is(version->new(v1.2.3_0)->stringify, "v1.2.30");
 }
-
-done_testing;
