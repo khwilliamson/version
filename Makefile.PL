@@ -45,18 +45,17 @@ write_makefile();
 
 sub write_makefile
 {
-    my %prereq = (
-        'ExtUtils::MakeMaker'   => 6.17,
+    my %test_prereq = (
         'Test::More'            => 0.45,
         'File::Temp'            => 0.13,
         'parent'                => 0.221,
     );
 
-    WriteMakefile( VERSION         => '0.9917',
+    WriteMakefile( VERSION         => '0.9918',
                    NAME            => 'version',
                    LICENSE         => 'perl',
                    MIN_PERL_VERSION=> 5.006002,
-                   PREREQ_PM       => \%prereq,
+                   TEST_REQUIRES   => \%test_prereq,
                    NORECURS        => $no_xs,
                    ABSTRACT    => 'Structured version objects',
                    AUTHOR      => 'John Peacock <jpeacock@cpan.org>',
@@ -90,9 +89,6 @@ sub write_makefile
                    dist            => {
                        COMPRESS => 'gzip -9f',
                        SUFFIX => 'gz',
-                       PREOP  => (
-                          'hg log --style changelog > Changes'
-                       ),
                    },
                    META_MERGE => {
                        "meta-spec" => { version => 2 },
